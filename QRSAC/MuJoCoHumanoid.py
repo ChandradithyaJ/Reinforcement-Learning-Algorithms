@@ -1,15 +1,12 @@
 import gymnasium as gym
 import nnabla_rl.algorithms.qrsac as qrsac
 from nnabla_rl.environments.wrappers.gymnasium import Gymnasium2GymWrapper
-from nnabla_rl.environments.wrappers import NumpyFloat32Env, ScreenRenderEnv
 import nnabla_rl.hooks as hooks
 import nnabla_rl.writers as writers
 
 def build_env(seed=None):
     env = gym.make('Humanoid-v5', render_mode="human")
     env = Gymnasium2GymWrapper(env)
-    env = NumpyFloat32Env(env)
-    env = ScreenRenderEnv(env) # visual rendering
     env.seed(seed)
     return env
 
