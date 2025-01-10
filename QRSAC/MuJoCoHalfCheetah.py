@@ -11,14 +11,14 @@ def build_env(env_name, seed=None):
     return env
 
 def main():
-    env_name = "Humanoid-v5"
+    env_name = "HalfCheetah-v5"
     env = build_env(env_name, seed=1002)
 
     results_folder = "./QRSAC/results/"
     rewards_writer = FileWriter(outdir=results_folder, file_prefix=env_name)
 
     # initialize hooks for logging
-    iteration_num_hook = hooks.IterationNumHook(timing=100)
+    iteration_num_hook = hooks.IterationNumHook(timing=10)
     evaluation_hook = hooks.EvaluationHook(env, writer=rewards_writer, timing=10)
 
     config = qrsac.QRSACConfig(
@@ -36,7 +36,7 @@ def main():
     QRSAC_algo = qrsac.QRSAC(env, config=config)
     QRSAC_algo.set_hooks(hooks=[iteration_num_hook, evaluation_hook])
 
-    QRSAC_algo.train(env, total_iterations=int(5000))
+    QRSAC_algo.train(env, total_iterations=int(2000))
 
     env.close()
 

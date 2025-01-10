@@ -2,7 +2,7 @@ import pathlib
 import numpy as np
 import nnabla_rl.utils.files as files
 from nnabla_rl.writer import Writer
-
+import pickle
 
 class FileWriter(Writer):
     def __init__(self, outdir, file_prefix, fmt="%.3f"):
@@ -13,6 +13,7 @@ class FileWriter(Writer):
         files.create_dir_if_not_exist(outdir=outdir)
         self._file_prefix = file_prefix
         self._fmt = fmt
+        self._rewards = [] 
 
     def write_scalar(self, iteration_num, scalar):
         outfile = self._outdir / (self._file_prefix + "_scalar.tsv")
@@ -28,15 +29,10 @@ class FileWriter(Writer):
             np.savetxt(f, [list(out_scalar.values())], fmt=["%i"] + [self._fmt] * len_scalar, delimiter="\t")
 
     def write_histogram(self, iteration_num, histogram):
-        outfile = self._outdir / (self._file_prefix + "_histogram.tsv")
+        outfile = self._outdir / (self._file_prefix + "_histogram.pkl")
 
-        self._create_file_if_not_exists(outfile, ["iteration(key)", "values"])
-
-        with open(outfile, "a") as f:
-            for key, values in histogram.items():
-                np.savetxt(
-                    f, [[iteration_num] + [*values]], fmt=[f"%i ({key})"] + [self._fmt] * len(values), delimiter="\t"
-                )
+        self._rewards.append(np.mean(histogram['returns']))
+        pickle.dump(self._rewards, open(outfile, 'wb'))
 
     def write_image(self, iteration_num, image):
         pass
